@@ -3,6 +3,10 @@ trigger:
 
 pool: Hitesh_Laptop_Pool
 
+variables:
+  serviceconnection : 'Hitesh_Service_Connection'
+
+
 steps:
   - task: TerraformInstaller@1
     displayName: 'terraform install'  
@@ -14,7 +18,7 @@ steps:
     inputs:
       provider: 'azurerm'
       command: 'init'
-      backendServiceArm: 'Hitesh_Service_Connection'
+      backendServiceArm: $(serviceconnection)
       backendAzureRmStorageAccountName: 'hiteshinitstorage'
       backendAzureRmContainerName: 'hiteshinitcontainer'
       backendAzureRmKey: 'terraform.tfstate'
@@ -24,11 +28,11 @@ steps:
     inputs:
       provider: 'azurerm'
       command: 'plan'
-      environmentServiceNameAzureRM: 'Hitesh_Service_Connection'
+      environmentServiceNameAzureRM: $(serviceconnection)
 
   - task: TerraformTask@5
     displayName: 'terraform apply'
     inputs:
       provider: 'azurerm'
       command: 'apply'
-      environmentServiceNameAzureRM: 'Hitesh_Service_Connection'
+      environmentServiceNameAzureRM: $(serviceconnection)
