@@ -6,35 +6,62 @@ pool: Hitesh_Laptop_Pool
 variables:
   serviceconnection: 'Hitesh_Service_Connection'
 
-jobs:
-- job: Terraform_Init_Plan_Apply
-  displayName: "Terraform Deployment Job"
-  steps:
-    - task: TerraformInstaller@1
-      displayName: 'terraform install'  
-      inputs:
-        terraformVersion: 'latest'
+stages:
+- stage: Init
+  displayName: "Terraform Init Stage"
+  jobs:
+  - job: Terraform_Init
+    displayName: "Terraform Init Job"
+    steps:
+      - task: TerraformInstaller@1
+        displayName: 'Install Terraform'
+        inputs:
+          terraformVersion: 'latest'
 
-    - task: TerraformTask@5
-      displayName: 'terraform init'
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        backendServiceArm: $(serviceconnection)
-        backendAzureRmStorageAccountName: 'hiteshinitstorage'
-        backendAzureRmContainerName: 'hiteshinitcontainer'
-        backendAzureRmKey: 'terraform.tfstate'
+      - task: TerraformTask@5
+        displayName: 'Terraform Init'
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          backendServiceArm: $(serviceconnection)
+          backendAzureRmStorageAccountName: 'hiteshinitstorage'
+          backendAzureRmContainerName: 'hiteshinitcontainer'
+          backendAzureRmKey: 'terraform.tfstate'
 
-    - task: TerraformTask@5
-      displayName: 'terraform plan'
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        environmentServiceNameAzureRM: $(serviceconnection)
+- stage: Plan
+  displayName: "Terraform Plan Stage"
+  dependsOn: Init
+  jobs:
+  - job: Terraform_Plan
+    displayName: "Terraform Plan Job"
+    steps:
+      - task: TerraformInstaller@1
+        displayName: 'Install Terraform'
+        inputs:
+          terraformVersion: 'latest'
 
-    - task: TerraformTask@5
-      displayName: 'terraform apply'
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        environmentServiceNameAzureRM: $(serviceconnection)
+      - task: TerraformTask@5
+        displayName: 'Terraform Plan'
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          environmentServiceNameAzureRM: $(serviceconnection)
+
+- stage: Apply
+  displayName: "Terraform Apply Stage"
+  dependsOn: Plan
+  jobs:
+  - job: Terraform_Apply
+    displayName: "Terraform Apply Job"
+    steps:
+      - task: TerraformInstaller@1
+        displayName: 'Install Terraform'
+        inputs:
+          terraformVersion: 'latest'
+
+      - task: TerraformTask@5
+        displayName: 'Terraform Apply'
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          environmentServiceNameAzureRM: $(serviceconnection)
