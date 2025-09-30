@@ -1,0 +1,56 @@
+trigger:
+  - main
+
+pool:
+  name: 'Hitesh_Laptop_Pool'
+
+stages:
+  - stage: Installation
+    jobs:
+      - job: toolneedtoinstall
+        steps:
+          - task: TerraformInstaller@1
+            displayName: 'terraform install'
+            inputs:
+              terraformVersion: 'latest'
+
+  - stage: Initialization
+    jobs:
+      - job: toolnnedtoinitialize
+        steps:
+          - task: TerraformTask@5
+            displayName: 'terraforminit'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/parent_module'
+              backendServiceArm: 'Hitesh_Workload_Federation'
+              backendAzureRmStorageAccountName: 'hiteshstginit'
+              backendAzureRmContainerName: 'hiteshinitcontainer'
+              backendAzureRmKey: 'terraform.tfstate'
+
+  - stage: plan
+    jobs:
+      - job: toolneedtoplan
+        steps:
+          - task: TerraformTask@5
+            displayName: 'terraformplan'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/parent_module'
+              environmentServiceNameAzureRM: 'Hitesh_Workload_Federation'
+
+
+  - stage: 
+    jobs:
+      - job: resourceapply
+        steps:
+          - task: TerraformTask@5
+            displayName: 'terraform apply'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/parent_module'
+              commandOptions: '--auto-approve'
+              environmentServiceNameAzureRM: 'Hitesh_Workload_Federation'
