@@ -33,7 +33,7 @@ stages:
               backendAzureRmContainerName: 'hiteshinitcontainer'
               backendAzureRmKey: 'terraform.tfstate'
 
-  - stage: 
+  - stage: Plan
     jobs:
       - job: ToPlanforresource
         steps:
@@ -61,7 +61,7 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/parent_module'
               environmentServiceNameAzureRM: 'Hitesh_Workload_Federation'
           
-  - stage: 
+  - stage: Apply
     jobs:
       - job: toapplyresources
         steps:
