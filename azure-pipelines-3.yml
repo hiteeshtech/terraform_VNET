@@ -34,6 +34,16 @@ stages:
       - job: toolneedtoplan
         steps:
           - task: TerraformTask@5
+            displayName: 'terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/parent_module'
+              backendServiceArm: 'Hitesh_Workload_Federation'
+              backendAzureRmStorageAccountName: 'hiteshstginit'
+              backendAzureRmContainerName: 'hiteshinitcontainer'
+              backendAzureRmKey: 'terraform.tfstate'
+          - task: TerraformTask@5
             displayName: 'terraformplan'
             inputs:
               provider: 'azurerm'
@@ -46,6 +56,16 @@ stages:
     jobs:
       - job: resourceapply
         steps:
+          - task: TerraformTask@5
+            displayName: 'terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/parent_module'
+              backendServiceArm: 'Hitesh_Workload_Federation'
+              backendAzureRmStorageAccountName: 'hiteshstginit'
+              backendAzureRmContainerName: 'hiteshinitcontainer'
+              backendAzureRmKey: 'terraform.tfstate'
           - task: TerraformTask@5
             displayName: 'terraform apply'
             inputs:
